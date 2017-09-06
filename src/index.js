@@ -7,7 +7,11 @@ import Board from './components/board.js';
 class App extends Component {
   render() {
     return (
+      <div className="container text-center">
+
+      <h1>Terrence: Tic Tac Toe Artificial Intellegence</h1>
           <Game />
+        </div>
     );
   }
 }

@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-class Square extends Component {
-  render() {
+function Square(props) {
     return (
-      <td className={"cell " + this.props.value}
-        id={ this.props.value }
-        onClick={ () => this.props.onClick()}>
+      <td
+        className={"cell " + props.value}
+        id={ props.value }
+        onClick={ props.onClick }>
       </td>
     );
-  }
 }
 
 export default Square;

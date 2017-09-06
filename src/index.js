@@ -9,7 +9,7 @@ class App extends Component {
     return (
       <div className="container text-center">
 
-      <h1>Terrence: Tic Tac Toe Artificial Intellegence</h1>
+        <h1>Tic Tac NO! AI</h1>
           <Game />
         </div>
     );

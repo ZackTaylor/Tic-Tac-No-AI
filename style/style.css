@@ -22,6 +22,15 @@ height: 100px;
 width: 100px;
 }
 
-td:hover {
+td.O {
+  background-color: black;
+}
+
+td.X {
+  background-color: white;
+}
+
+
+td.null:hover {
   background-color: rgba(255, 255, 255, 0.5);
 }

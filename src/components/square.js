@@ -4,7 +4,10 @@ import ReactDOM from 'react-dom';
 class Square extends Component {
   render() {
     return (
-      <td className="cell" id={ this.props.value }></td>
+      <td className={"cell " + this.props.value}
+        id={ this.props.value }
+        onClick={ () => this.props.onClick()}>
+      </td>
     );
   }
 }

@@ -6,9 +6,7 @@ class Board extends Component {
   constructor() {
     super();
     this.state = {
-      // squares: Array(9).fill(null),
       squares: Array.from(Array(9).keys()),
-      xIsNext: true,
     };
   }
 
@@ -36,25 +34,21 @@ class Board extends Component {
   handleClick(i) {
     const squares = this.state.squares.slice();
 
-    if (this.calculateWinner(squares) || (squares[i] === "X" || squares[i] === "O")) {
+    if (this.calculateWinner(squares) || squares[i] === "X" || squares[i] === "O") {
       return;
     }
 
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-
+    squares[i] = "X";
     this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
+      squares: this.computerMove(squares),
     });
   }
 
   computerMove(squares) {
-    if (!this.state.xIsNext) {
-      let bestMove =       this.minimax(this.state.squares, "O");
-      let squares = this.state.squares.slice();
-      squares[bestMove] = "X";
-      return squares;
-    }
+      let bestMove = this.minimax(squares, "O");
+      let squaresCopy = squares.slice();
+      squaresCopy[bestMove.index] = "O";
+      return squaresCopy;
   }
 
   renderSquare(i) {
@@ -127,11 +121,12 @@ class Board extends Component {
   render() {
     const winner = this.calculateWinner(this.state.squares);
     let status;
-    if (winner) {
-      status = "Winner: " + winner;
-    } else {
-      status = `Next player: ${ this.state.xIsNext ? 'X' : 'O' }`;
+    if (winner === "O") {
+      status = "Computer Wins!";
+    } else if (winner === "X") {
+      status = "You Win!";
     }
+    
       return (
         <div>
           <div className="status">{status}</div>

@@ -142,7 +142,7 @@ class Board extends Component {
     }
       return (
         <div>
-          <div className="status">{status}</div>
+          <h2 className="status">{status}</h2>
           <table>
             <tbody>
               <tr>

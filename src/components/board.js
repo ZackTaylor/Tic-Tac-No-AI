@@ -6,7 +6,8 @@ class Board extends Component {
   constructor() {
     super();
     this.state = {
-      squares: Array(9).fill(null),
+      // squares: Array(9).fill(null),
+      squares: Array.from(Array(9).keys()),
       xIsNext: true,
     };
   }
@@ -22,26 +23,38 @@ class Board extends Component {
       [0, 4, 8],
       [2, 4, 6],
     ];
+
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
         return squares[a];
       }
     }
-    return null;
+    return false;
   }
 
   handleClick(i) {
     const squares = this.state.squares.slice();
-    if (this.calculateWinner(squares) || squares[i]) {
+
+    if (this.calculateWinner(squares) || (squares[i] === "X" || squares[i] === "O")) {
       return;
     }
-    
+
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+
     this.setState({
       squares: squares,
       xIsNext: !this.state.xIsNext,
     });
+  }
+
+  computerMove(squares) {
+    if (!this.state.xIsNext) {
+      let bestMove =       this.minimax(this.state.squares, "O");
+      let squares = this.state.squares.slice();
+      squares[bestMove] = "X";
+      return squares;
+    }
   }
 
   renderSquare(i) {
@@ -51,6 +64,64 @@ class Board extends Component {
         onClick={ () => this.handleClick(i) }
       />
     );
+  }
+
+  emptyIndices(board) {
+    return board.filter( space => space !== "O" && space !== "X");
+  }
+
+  minimax(newBoard, player) {
+    let availSpots = this.emptyIndices(newBoard);
+
+    if (this.calculateWinner(newBoard) === "X") {
+      return {score: -10};
+    } else if (this.calculateWinner(newBoard) === "O") {
+      return {score: 10};
+    } else if (availSpots.length === 0) {
+      return {score: 0};
+    }
+
+    let moves = [];
+
+    for (let i = 0; i < availSpots.length; i++) {
+      let move = {};
+      let result;
+      move.index = newBoard[availSpots[i]];
+      newBoard[availSpots[i]] = player;
+
+      if (player === "O") {
+        result = this.minimax(newBoard, "X");
+        move.score = result.score;
+      } else {
+        result = this.minimax(newBoard, "O");
+        move.score = result.score;
+      }
+
+      newBoard[availSpots[i]] = move.index;
+
+      // push the object to the array
+      moves.push(move);
+    }
+
+    let bestMove;
+    if (player === "O") {
+      let bestScore = -10000;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      var bestScore = 10000;
+      for(var i = 0; i < moves.length; i++) {
+        if(moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+    return moves[bestMove];
   }
 
   render() {
@@ -63,7 +134,6 @@ class Board extends Component {
     }
       return (
         <div>
-
           <div className="status">{status}</div>
           <table>
             <tbody>
@@ -88,6 +158,8 @@ class Board extends Component {
       </div>
     );
   }
+
+
 }
 
 export default Board;

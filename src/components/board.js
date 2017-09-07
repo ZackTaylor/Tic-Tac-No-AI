@@ -64,39 +64,44 @@ class Board extends Component {
     return board.filter( space => space !== "O" && space !== "X");
   }
 
-  minimax(newBoard, player) {
-    let availSpots = this.emptyIndices(newBoard);
-
-    if (this.calculateWinner(newBoard) === "X") {
+  getScore(board, availSpots) {
+    if (this.calculateWinner(board) === "X") {
       return {score: -10};
-    } else if (this.calculateWinner(newBoard) === "O") {
+    } else if (this.calculateWinner(board) === "O") {
       return {score: 10};
     } else if (availSpots.length === 0) {
       return {score: 0};
     }
 
+  }
+
+  returnScore(board, player) {
+    let result = this.minimax(board, player);
+    return result.score;
+  }
+
+  generateMoves(board, availSpots, player) {
     let moves = [];
 
     for (let i = 0; i < availSpots.length; i++) {
       let move = {};
-      let result;
-      move.index = newBoard[availSpots[i]];
-      newBoard[availSpots[i]] = player;
+      move.index = board[availSpots[i]];
+      board[availSpots[i]] = player;
 
       if (player === "O") {
-        result = this.minimax(newBoard, "X");
-        move.score = result.score;
+        move.score = this.returnScore(board, "X");
       } else {
-        result = this.minimax(newBoard, "O");
-        move.score = result.score;
+        move.score = this.returnScore(board, "O");
       }
 
-      newBoard[availSpots[i]] = move.index;
+      board[availSpots[i]] = move.index;
 
-      // push the object to the array
       moves.push(move);
     }
+    return moves;
+  }
 
+  findBestMove(moves, player) {
     let bestMove;
     if (player === "O") {
       let bestScore = -10000;
@@ -118,6 +123,13 @@ class Board extends Component {
     return moves[bestMove];
   }
 
+  minimax(newBoard, player) {
+    let availSpots = this.emptyIndices(newBoard);
+    if (this.getScore(newBoard, availSpots)) return this.getScore(newBoard, availSpots);
+    let moves = this.generateMoves(newBoard, availSpots, player);
+    return this.findBestMove(moves, player);
+  }
+
   render() {
     const winner = this.calculateWinner(this.state.squares);
     let status;
@@ -125,11 +137,12 @@ class Board extends Component {
       status = "Computer Wins!";
     } else if (winner === "X") {
       status = "You Win!";
+    } else if (!winner && this.emptyIndices(this.state.squares).length === 0) {
+      status = "Draw";
     }
-    
       return (
         <div>
-          <div className="status">{status}</div>
+          <h2 className="status">{status}</h2>
           <table>
             <tbody>
               <tr>
